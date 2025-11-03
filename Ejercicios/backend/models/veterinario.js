@@ -30,7 +30,7 @@ const veterinarioSchema = mongoose.Schema({
         type:String,
         default:generarId()
     },
-    confirmador:{
+    confirmado:{
         type:Boolean,
         default:false
     }
