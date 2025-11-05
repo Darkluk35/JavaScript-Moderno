@@ -13,9 +13,10 @@ const pacientesSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    alta: {
+    fecha: {
         type: Date,
         required: true,
+        default: Date.now(),
     },
     sintomas: {
         type: String,
@@ -24,4 +25,9 @@ const pacientesSchema = new mongoose.Schema({
     veterinario:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Veterinario',
-    }});
+    }},{
+    timestamps: true,
+    });
+
+    const Paciente = mongoose.model('Paciente', pacientesSchema);
+    export default Paciente;
