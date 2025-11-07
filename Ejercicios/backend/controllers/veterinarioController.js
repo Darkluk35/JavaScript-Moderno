@@ -1,11 +1,12 @@
 import Veterinario from '../models/veterinario.js';
 import generarJWT from '../helpers/generarJWT.js';
 import generarId from '../helpers/generarId.js';
+import emailRegistro from '../helpers/emailRegistro.js'
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
 const registrar = async(req,res)=>{
-    const {email} = req.body;
+    const {email,nombre} = req.body;
 //Prevenir el duplicado de usuarios
 
 const existeUsuario = await Veterinario.findOne({email})
@@ -18,7 +19,16 @@ try {
     //Guardar un veterinario
     const veterinario = new Veterinario(req.body);
     const veterinarioGuardado = await veterinario.save();
-    res.json({msg:'Registrando usuario...'});
+
+    //Enviar email
+    emailRegistro({
+        email,
+        nombre,
+        token: veterinarioGuardado.token
+    });
+
+
+    res.json(veterinarioGuardado);
     
 } catch (error) {
     console.log(error);
@@ -26,6 +36,7 @@ try {
 //////////////////////////////////////////////////////////////////////////////////////////
 const confirmar = async (req,res)=>{
     const {token} = req.params;
+    console.log('🧭 Token recibido:', token);
     const usuarioConfirmar = await Veterinario.findOne({token});
     
 if(!usuarioConfirmar){
@@ -37,9 +48,11 @@ try {
     usuarioConfirmar.token = null
     usuarioConfirmar.confirmado = true;
     await usuarioConfirmar.save();
-    res.json({msg:'Usuario confirmado correctamente'});
+    console.log('✅ Usuario confirmado correctamente');
+    res.json({ msg: 'Usuario confirmado correctamente' });
 } catch (error) {
-    console.log(error);    
+    console.log('❌ Error al confirmar:', error);
+    res.status(500).json({ msg: 'Error en el servidor' });  
 }
     
     
