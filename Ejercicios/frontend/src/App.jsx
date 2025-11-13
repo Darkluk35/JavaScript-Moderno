@@ -9,6 +9,8 @@ import ConfirmarCuenta from './paginas/ConfirmarCuenta'
 import OlvidePassword from './paginas/OlvidePassword'
 import NuevoPassword from './paginas/NuevoPassword'
 import AdministrarPacientes from './paginas/AdministrarPacientes'
+import EditarPefil from './paginas/EditarPefil'
+import CambiarPassword from './paginas/CambiarPassword'
 
 import { AuthProvider } from './context/AuthProvider' 
 import { PacientesProvider } from './context/PacientesProvider' 
@@ -31,6 +33,8 @@ function App() {
 
       <Route path='/admin' element={<RutaProtegida/>}>
         <Route index element={<AdministrarPacientes/>}/>
+        <Route path='perfil' element={<EditarPefil/>}/>
+        <Route path='cambiar-password' element={<CambiarPassword/>}/>
       </Route>
     </Routes>
     </PacientesProvider>  
