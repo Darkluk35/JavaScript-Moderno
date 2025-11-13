@@ -146,4 +146,67 @@ const nuevaPassword = async(req,res)=>{
     }
 }
 
-export {registrar,perfil, confirmar, autenticar,olvidePassword,comprobarPassword,nuevaPassword};
+/////////////////////////////////////////////////////////////////////////////////////////
+
+const actualizarPerfil =async(req,res)=>{
+    //Comprobar que el veterinario existe
+    const veterinario = await Veterinario.findById(req.params.id);
+    if(!veterinario){
+        const error = new Error('Hubo un error')
+        return res.status(400).json({msg:error.message})
+    }
+    const{email} = req.body;
+    if(veterinario.email !== req.body.email){
+        const existeEmail = await Veterinario.findOne({email})
+        if(existeEmail){
+            const error = new Error('Este correo ya esta registrado')
+            return res.status(400).json({msg:error.message})
+        }
+    }
+    try {
+         veterinario.nombre = req.body.nombre || veterinario.nombre;
+         veterinario.email = req.body.email || veterinario.email;
+         veterinario.web = req.body.web;
+         veterinario.telefono = req.body.telefono;
+         const veterinarioActualizado = await veterinario.save();
+         res.json(veterinarioActualizado);
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+
+const actualizarPassword = async(req,res)=>{
+    //Leer los datos
+    const {id} = req.veterinario
+    const {pwd_actual,pwd_nuevo} = req.body
+    //Comprobar que el veterinario existe
+    const veterinario = await Veterinario.findById(id);
+    if(!veterinario){
+        const error = new Error('Hubo un error')
+        return res.status(400).json({msg:error.message})
+    }
+    //Comprobar que el password actual sea correcto
+    if(await veterinario.comprobarPassword(pwd_actual)){
+        veterinario.password = pwd_nuevo;
+        await veterinario.save();
+        res.json({msg:'Password cambiado con exito'})
+    }
+    else{
+        const error = new Error('Contraseña actual incorrecta')
+        return res.status(400).json({msg:error.message})
+    }
+    //Almacenar el nuevo password
+
+}
+export {
+    registrar,
+    perfil, 
+    confirmar, 
+    autenticar,
+    olvidePassword,
+    comprobarPassword,
+    nuevaPassword,
+    actualizarPerfil,
+    actualizarPassword};
